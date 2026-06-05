@@ -1,204 +1,131 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Hermes Live Ops Dashboard Panel</title>
-  <meta name="description" content="Verified live HTML dashboard panel published by Hermes Mary." />
-  <style>
-    :root {
-      color-scheme: dark;
-      --bg: #08111f;
-      --panel: rgba(15, 23, 42, 0.86);
-      --panel-strong: rgba(15, 23, 42, 0.96);
-      --text: #f8fafc;
-      --muted: #94a3b8;
-      --line: rgba(148, 163, 184, 0.22);
-      --blue: #38bdf8;
-      --green: #34d399;
-      --amber: #fbbf24;
-      --red: #fb7185;
-      --violet: #a78bfa;
-      --radius: 24px;
-      --shadow: 0 24px 90px rgba(0, 0, 0, 0.42);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      color: var(--text);
-      background:
-        radial-gradient(circle at 12% 10%, rgba(56, 189, 248, .23), transparent 30%),
-        radial-gradient(circle at 88% 18%, rgba(167, 139, 250, .20), transparent 26%),
-        linear-gradient(135deg, #020617, var(--bg));
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
-      background-size: 44px 44px;
-      mask-image: radial-gradient(circle at center, black, transparent 78%);
-    }
-
-    main { width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 34px 0; }
-    header { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; margin-bottom: 22px; }
-    .eyebrow { color: var(--blue); font-weight: 800; letter-spacing: .16em; text-transform: uppercase; font-size: .76rem; }
-    h1 { margin: .35rem 0 .6rem; font-size: clamp(2rem, 5vw, 4.4rem); line-height: .92; letter-spacing: -.07em; max-width: 850px; }
-    .lede { color: var(--muted); font-size: 1.05rem; line-height: 1.7; max-width: 720px; margin: 0; }
-    .live-pill { display: inline-flex; gap: 10px; align-items: center; padding: 10px 14px; border: 1px solid var(--line); border-radius: 999px; background: rgba(15, 23, 42, .68); white-space: nowrap; box-shadow: var(--shadow); }
-    .pulse { width: 10px; height: 10px; border-radius: 999px; background: var(--green); box-shadow: 0 0 0 0 rgba(52, 211, 153, .65); animation: pulse 1.8s infinite; }
-    @keyframes pulse { to { box-shadow: 0 0 0 12px rgba(52, 211, 153, 0); } }
-
-    .dashboard { display: grid; grid-template-columns: 1.3fr .7fr; gap: 18px; }
-    .panel { border: 1px solid var(--line); background: var(--panel); backdrop-filter: blur(16px); border-radius: var(--radius); box-shadow: var(--shadow); }
-    .panel-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 18px 20px; border-bottom: 1px solid var(--line); }
-    .panel-title { margin: 0; font-size: 1rem; letter-spacing: -.02em; }
-    .select { color: var(--text); background: rgba(2, 6, 23, .44); border: 1px solid var(--line); border-radius: 12px; padding: 8px 10px; }
-
-    .metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 16px; }
-    .metric { padding: 16px; border-radius: 18px; background: rgba(2, 6, 23, .42); border: 1px solid var(--line); min-height: 132px; transition: transform .2s ease, border-color .2s ease; }
-    .metric:focus, .metric:hover { outline: none; transform: translateY(-2px); border-color: rgba(56, 189, 248, .62); }
-    .label { color: var(--muted); font-size: .78rem; text-transform: uppercase; letter-spacing: .12em; font-weight: 800; }
-    .value { font-size: 2.05rem; font-weight: 900; letter-spacing: -.06em; margin: 14px 0 6px; }
-    .delta { font-size: .9rem; color: var(--green); }
-    .delta.warn { color: var(--amber); }
-
-    .chart-wrap { padding: 0 16px 18px; }
-    svg { width: 100%; height: 280px; display: block; border-radius: 18px; background: linear-gradient(180deg, rgba(14, 165, 233, .10), rgba(2, 6, 23, .28)); border: 1px solid var(--line); }
-    .chart-grid { stroke: rgba(148, 163, 184, .18); stroke-width: 1; }
-    .chart-line { fill: none; stroke: var(--blue); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 10px rgba(56,189,248,.42)); }
-    .chart-area { fill: url(#area); opacity: .8; }
-
-    .side { display: grid; gap: 18px; }
-    .activity, .alerts { padding: 16px; }
-    .row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
-    .row:last-child { border-bottom: 0; }
-    .dot { width: 11px; height: 11px; border-radius: 999px; background: var(--green); }
-    .dot.amber { background: var(--amber); }
-    .dot.red { background: var(--red); }
-    .row strong { display: block; font-size: .93rem; }
-    .row span { color: var(--muted); font-size: .83rem; }
-    button { cursor: pointer; color: var(--text); background: rgba(56, 189, 248, .12); border: 1px solid rgba(56, 189, 248, .28); border-radius: 12px; padding: 8px 10px; font-weight: 800; }
-    button:hover, button:focus { outline: 2px solid rgba(56, 189, 248, .38); outline-offset: 2px; }
-
-    .footer-note { margin-top: 18px; color: var(--muted); font-size: .9rem; }
-    code { color: #e0f2fe; background: rgba(56, 189, 248, .12); padding: .15rem .38rem; border-radius: 7px; }
-
-    @media (max-width: 900px) {
-      header, .dashboard { grid-template-columns: 1fr; display: grid; }
-      .metric-grid { grid-template-columns: repeat(2, 1fr); }
-      .live-pill { justify-self: start; }
-    }
-    @media (max-width: 560px) {
-      .metric-grid { grid-template-columns: 1fr; }
-      main { width: min(100% - 20px, 1180px); padding: 18px 0; }
-      .panel-head { align-items: flex-start; flex-direction: column; }
-    }
-    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Iran Conflict TimeMachine — 10 / 30 / 60 Day Scenario Dashboard</title>
+<meta name="description" content="A youth-friendly interactive scenario dashboard about possible 10, 30, and 60 day outcomes in the Iran conflict, based on current reporting and trend signals." />
+<style>
+:root{
+  --bg:#07111f;--panel:#0d1b2e;--panel2:#10253d;--ink:#eef6ff;--muted:#a9bed3;--line:#24415f;
+  --blue:#63d5ff;--green:#7ee787;--amber:#ffd166;--red:#ff6b7a;--purple:#b69cff;--white:#fff;
+  --shadow:0 24px 80px rgba(0,0,0,.35);--radius:22px;--focus:0 0 0 3px rgba(99,213,255,.42);
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(circle at 20% 0%,#153c5f 0,#07111f 34%,#050911 100%);color:var(--ink);line-height:1.5}.skip{position:absolute;left:-999px;top:8px;background:var(--blue);color:#06101c;padding:10px 14px;border-radius:12px;z-index:20}.skip:focus{left:8px}a{color:var(--blue)}button,input{font:inherit}button,.chip{min-height:44px}button{border:0;border-radius:999px;background:#163352;color:var(--ink);padding:10px 16px;cursor:pointer;border:1px solid #2b5274}button:hover,button[aria-pressed="true"]{background:linear-gradient(135deg,#1d6b91,#204e9c);border-color:#6dd9ff}button:focus-visible,input:focus-visible,a:focus-visible{outline:0;box-shadow:var(--focus)}.wrap{max-width:1180px;margin:0 auto;padding:22px}.hero{padding:38px 0 18px;display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:stretch}.badge{display:inline-flex;gap:8px;align-items:center;padding:7px 12px;border:1px solid #2d597a;border-radius:999px;color:var(--muted);background:rgba(13,27,46,.72)}h1{font-size:clamp(2.1rem,6vw,5.2rem);line-height:.95;margin:18px 0 14px;letter-spacing:-.06em}h2{font-size:clamp(1.45rem,3vw,2.4rem);line-height:1.05;margin:0 0 12px;letter-spacing:-.03em}h3{font-size:1.05rem;margin:0 0 8px}.lead{font-size:clamp(1.05rem,2vw,1.35rem);color:#d6e8f8;max-width:760px}.grid{display:grid;gap:16px}.cards{grid-template-columns:repeat(3,1fr)}.card{background:linear-gradient(180deg,rgba(16,37,61,.92),rgba(9,20,35,.92));border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}.glass{background:rgba(13,27,46,.66);backdrop-filter:blur(10px)}.heroPanel{position:relative;overflow:hidden;min-height:360px}.heroPanel:before{content:"";position:absolute;inset:-40px;background:conic-gradient(from 220deg,var(--blue),transparent 22%,var(--amber),transparent 54%,var(--red),transparent 78%,var(--blue));opacity:.22;filter:blur(10px)}.orbit{position:relative;height:100%;display:grid;place-items:center}.ring{position:absolute;border:1px solid rgba(255,255,255,.12);border-radius:50%;animation:spin 22s linear infinite}.r1{width:270px;height:270px}.r2{width:190px;height:190px;animation-duration:16s;animation-direction:reverse}.core{z-index:2;width:150px;height:150px;border-radius:50%;display:grid;place-items:center;text-align:center;background:radial-gradient(circle,#143a5a,#07111f);border:1px solid #5fcfff;box-shadow:0 0 60px rgba(99,213,255,.3)}.dot{position:absolute;width:18px;height:18px;border-radius:50%;background:var(--amber);top:26px;left:50%;box-shadow:0 0 18px var(--amber)}.dot.red{background:var(--red);top:auto;bottom:34px;left:18%;box-shadow:0 0 18px var(--red)}.dot.green{background:var(--green);top:46%;left:auto;right:18%;box-shadow:0 0 18px var(--green)}@keyframes spin{to{transform:rotate(360deg)}}.metric{display:flex;align-items:center;justify-content:space-between;gap:12px}.big{font-size:2.35rem;font-weight:850;letter-spacing:-.05em}.muted{color:var(--muted)}.pill{display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:6px 10px;font-size:.86rem;border:1px solid var(--line);color:var(--muted)}.riskbar{height:12px;border-radius:99px;background:#1b2b3f;overflow:hidden;margin-top:10px}.riskbar span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--green),var(--amber),var(--red));width:var(--w)}.tabs{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0 18px}.scenario{display:none}.scenario.active{display:grid;grid-template-columns:340px 1fr;gap:16px}.timeline{position:relative;padding-left:26px}.timeline:before{content:"";position:absolute;left:8px;top:8px;bottom:8px;width:2px;background:#2e5575}.event{position:relative;margin:0 0 14px;padding:14px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.035)}.event:before{content:"";position:absolute;left:-23px;top:18px;width:12px;height:12px;background:var(--blue);border-radius:50%;box-shadow:0 0 0 4px #07111f}.barrow{display:grid;grid-template-columns:145px 1fr 54px;gap:10px;align-items:center;margin:10px 0}.track{height:14px;background:#172a40;border-radius:999px;overflow:hidden}.fill{height:100%;border-radius:999px;background:var(--blue);width:var(--p)}.green{background:var(--green)}.amber{background:var(--amber)}.red{background:var(--red)}.purple{background:var(--purple)}.controlPanel{display:grid;grid-template-columns:1fr 1fr;gap:14px}.rangeRow{display:grid;grid-template-columns:120px 1fr 54px;gap:12px;align-items:center;margin:12px 0}.rangeRow input{width:100%}.callout{border-left:4px solid var(--blue);padding:12px 14px;background:rgba(99,213,255,.08);border-radius:14px}.sourceList li{margin:8px 0}.teen{font-size:1.06rem}.legend{display:flex;gap:10px;flex-wrap:wrap}.sw{width:12px;height:12px;border-radius:50%;display:inline-block}.footer{padding:22px 0 40px;color:var(--muted);font-size:.95rem}.two{grid-template-columns:1fr 1fr}.heat{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.heat div{padding:12px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.04)}@media(max-width:880px){.hero,.scenario.active,.cards,.two,.controlPanel{grid-template-columns:1fr}.heroPanel{min-height:270px}.barrow{grid-template-columns:110px 1fr 46px}.heat{grid-template-columns:1fr 1fr}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+</style>
 </head>
 <body>
-  <main>
-    <header>
-      <div>
-        <div class="eyebrow">Hermes Live HTML Test</div>
-        <h1>Operations dashboard panel, published live.</h1>
-        <p class="lede">A self-contained responsive dashboard example with real-time simulated metrics, SVG charting, accessible controls, and a verified GitHub Pages URL.</p>
+<a class="skip" href="#main">Skip to dashboard</a>
+<div class="wrap">
+  <header class="hero">
+    <section>
+      <span class="badge">TimeMachine Simulator • updated June 5, 2026 • educational forecast</span>
+      <h1>What could happen next with Iran?</h1>
+      <p class="lead">A plain-English, interactive dashboard for U.S. high-school students. It turns current reporting into scenario forecasts for the next <strong>10, 30, and 60 days</strong> — not a prophecy, just a structured way to think.</p>
+      <div class="legend" aria-label="Legend">
+        <span class="pill"><span class="sw green"></span>Lower risk / diplomacy</span>
+        <span class="pill"><span class="sw amber"></span>Pressure / stalemate</span>
+        <span class="pill"><span class="sw red"></span>Escalation</span>
+        <span class="pill"><span class="sw purple"></span>Unknowns</span>
       </div>
-      <div class="live-pill" aria-label="Live publishing status"><span class="pulse"></span><strong>Live</strong><span id="clock">--:--:--</span></div>
-    </header>
+    </section>
+    <aside class="card heroPanel" aria-label="Animated regional pressure map illustration">
+      <div class="orbit"><div class="ring r1"><span class="dot"></span><span class="dot red"></span><span class="dot green"></span></div><div class="ring r2"></div><div class="core"><strong>Fragile<br>ceasefire</strong><small class="muted">talks + flare-ups</small></div></div>
+    </aside>
+  </header>
 
-    <section class="dashboard" aria-label="Example operations dashboard">
-      <article class="panel">
-        <div class="panel-head">
-          <h2 class="panel-title">Revenue Recovery Monitor</h2>
-          <select id="metricSelect" class="select" aria-label="Select chart metric">
-            <option value="leads">Qualified leads</option>
-            <option value="calls">After-hours calls</option>
-            <option value="value">Pipeline value</option>
-          </select>
-        </div>
-        <div class="metric-grid">
-          <button class="metric" type="button" data-base="42" aria-label="Qualified leads metric">
-            <div class="label">Qualified leads</div><div class="value" id="leads">42</div><div class="delta">+18% vs last week</div>
-          </button>
-          <button class="metric" type="button" data-base="91" aria-label="Answer rate metric">
-            <div class="label">Answer rate</div><div class="value" id="answer">91%</div><div class="delta">+7% captured</div>
-          </button>
-          <button class="metric" type="button" data-base="126" aria-label="Response time metric">
-            <div class="label">Median response</div><div class="value" id="response">1.26m</div><div class="delta warn">Target &lt; 2m</div>
-          </button>
-          <button class="metric" type="button" data-base="18400" aria-label="Pipeline value metric">
-            <div class="label">Pipeline</div><div class="value" id="pipeline">$18.4k</div><div class="delta">+12 jobs routed</div>
-          </button>
-        </div>
-        <div class="chart-wrap">
-          <svg viewBox="0 0 900 280" role="img" aria-label="Simulated live trend chart">
-            <defs><linearGradient id="area" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#38bdf8" stop-opacity=".34"/><stop offset="1" stop-color="#38bdf8" stop-opacity="0"/></linearGradient></defs>
-            <g id="grid"></g><path id="areaPath" class="chart-area"></path><path id="linePath" class="chart-line"></path>
-          </svg>
+  <main id="main">
+    <section class="grid cards" aria-label="Current situation summary">
+      <article class="card"><div class="metric"><h3>Ceasefire status</h3><span class="pill amber">fragile</span></div><p class="teen">Reports describe a shaky ceasefire with talks still moving, but recent missiles, drones, and U.S. strikes show it can break quickly.</p></article>
+      <article class="card"><div class="metric"><h3>Big bottleneck</h3><span class="pill red">Hormuz</span></div><p class="teen">The Strait of Hormuz is the key pressure point because it affects oil, shipping, and global prices. AP reported traffic far below prewar levels.</p></article>
+      <article class="card"><div class="metric"><h3>Deal shape</h3><span class="pill green">possible</span></div><p class="teen">A tentative 60-day ceasefire extension plus nuclear talks has been reported, but confirmation and details remain uncertain.</p></article>
+    </section>
+
+    <section class="card" style="margin-top:18px">
+      <h2>TimeMachine forecast</h2>
+      <p class="muted">Select a time window. Probabilities are estimates from the signals below: diplomacy momentum, military flare-ups, Strait of Hormuz pressure, Lebanon/Hezbollah linkage, and domestic political pressure.</p>
+      <div class="tabs" role="tablist" aria-label="Forecast windows">
+        <button role="tab" aria-selected="true" aria-controls="s10" id="t10" data-tab="10">10 days</button>
+        <button role="tab" aria-selected="false" aria-controls="s30" id="t30" data-tab="30">30 days</button>
+        <button role="tab" aria-selected="false" aria-controls="s60" id="t60" data-tab="60">60 days</button>
+      </div>
+
+      <div id="s10" class="scenario active" role="tabpanel" aria-labelledby="t10">
+        <aside class="card glass"><span class="pill amber">Most likely: shaky pause</span><p class="big">45%</p><p>Talks continue while both sides test limits. Expect warnings, limited strikes, cyber/noise, and pressure around shipping rather than full settlement.</p><div class="riskbar" style="--w:58%"><span></span></div><small class="muted">Risk level: medium-high</small></aside>
+        <div><div class="barrow"><strong>Shaky pause</strong><div class="track"><div class="fill amber" style="--p:45%"></div></div><span>45%</span></div><div class="barrow"><strong>Limited exchange</strong><div class="track"><div class="fill red" style="--p:35%"></div></div><span>35%</span></div><div class="barrow"><strong>Spillover</strong><div class="track"><div class="fill purple" style="--p:15%"></div></div><span>15%</span></div><div class="barrow"><strong>Fast breakthrough</strong><div class="track"><div class="fill green" style="--p:5%"></div></div><span>5%</span></div><div class="callout"><strong>Teen translation:</strong> The next 10 days are like a hallway fight where teachers are trying to separate everyone — not calm, but not guaranteed to become a full brawl.</div></div>
+      </div>
+
+      <div id="s30" class="scenario" role="tabpanel" aria-labelledby="t30">
+        <aside class="card glass"><span class="pill green">Most likely: interim deal attempt</span><p class="big">40%</p><p>A short-term deal extends talks, opens more shipping, and delays bigger choices on nuclear limits and sanctions.</p><div class="riskbar" style="--w:50%"><span></span></div><small class="muted">Risk level: medium</small></aside>
+        <div><div class="barrow"><strong>Interim deal</strong><div class="track"><div class="fill green" style="--p:40%"></div></div><span>40%</span></div><div class="barrow"><strong>Grinding stalemate</strong><div class="track"><div class="fill amber" style="--p:30%"></div></div><span>30%</span></div><div class="barrow"><strong>Escalation cycle</strong><div class="track"><div class="fill red" style="--p:20%"></div></div><span>20%</span></div><div class="barrow"><strong>Broader de-escalation</strong><div class="track"><div class="fill green" style="--p:10%"></div></div><span>10%</span></div><div class="callout"><strong>What to watch:</strong> Does Iran clearly accept a deal? Do mines/tolls disappear from Hormuz? Does fighting in Lebanon cool down?</div></div>
+      </div>
+
+      <div id="s60" class="scenario" role="tabpanel" aria-labelledby="t60">
+        <aside class="card glass"><span class="pill amber">Most likely: temporary settlement or frozen conflict</span><p class="big">35%</p><p>The most likely path is a temporary arrangement: enough to reduce market panic, not enough to solve the nuclear or regional security problem.</p><div class="riskbar" style="--w:54%"><span></span></div><small class="muted">Risk level: medium-high</small></aside>
+        <div><div class="barrow"><strong>Temporary settlement</strong><div class="track"><div class="fill green" style="--p:35%"></div></div><span>35%</span></div><div class="barrow"><strong>Frozen conflict</strong><div class="track"><div class="fill amber" style="--p:30%"></div></div><span>30%</span></div><div class="barrow"><strong>Major escalation</strong><div class="track"><div class="fill red" style="--p:20%"></div></div><span>20%</span></div><div class="barrow"><strong>Real de-escalation</strong><div class="track"><div class="fill green" style="--p:15%"></div></div><span>15%</span></div><div class="callout"><strong>Bottom line:</strong> Sixty days is long enough for diplomacy to work — and long enough for one mistake to restart the spiral.</div></div>
+      </div>
+    </section>
+
+    <section class="grid two" style="margin-top:18px">
+      <article class="card">
+        <h2>Signal board</h2>
+        <div class="heat" aria-label="Key trend signals">
+          <div><strong>Talks</strong><br><span class="muted">Still active, but wording/details matter.</span></div>
+          <div><strong>Hormuz</strong><br><span class="muted">Shipping limits are the economic pressure valve.</span></div>
+          <div><strong>Lebanon</strong><br><span class="muted">Hezbollah fighting can derail Iran talks.</span></div>
+          <div><strong>Nuclear issue</strong><br><span class="muted">Hardest policy problem; likely deferred first.</span></div>
         </div>
       </article>
-
-      <aside class="side">
-        <article class="panel alerts">
-          <div class="panel-head" style="padding:0 0 12px;border-bottom:0"><h2 class="panel-title">Priority alerts</h2></div>
-          <div class="row"><span class="dot red"></span><div><strong>Missed-call spike</strong><span>3 urgent callers in 22 minutes</span></div><button>Ack</button></div>
-          <div class="row"><span class="dot amber"></span><div><strong>Quote widget</strong><span>2 estimates awaiting owner review</span></div><button>View</button></div>
-          <div class="row"><span class="dot"></span><div><strong>AI agent</strong><span>All routing workflows healthy</span></div><button>Logs</button></div>
-        </article>
-        <article class="panel activity">
-          <div class="panel-head" style="padding:0 0 12px;border-bottom:0"><h2 class="panel-title">Recent activity</h2></div>
-          <div id="activityList"></div>
-        </article>
-      </aside>
+      <article class="card">
+        <h2>Adjust the risk model</h2>
+        <p class="muted">Move the sliders to see how the overall risk meter changes. This is a learning tool, not an official model.</p>
+        <div class="rangeRow"><label for="diplo">Diplomacy</label><input id="diplo" type="range" min="0" max="100" value="55"><output id="diploOut">55</output></div>
+        <div class="rangeRow"><label for="mil">Military</label><input id="mil" type="range" min="0" max="100" value="62"><output id="milOut">62</output></div>
+        <div class="rangeRow"><label for="ship">Shipping</label><input id="ship" type="range" min="0" max="100" value="70"><output id="shipOut">70</output></div>
+        <div class="rangeRow"><label for="proxy">Proxy fronts</label><input id="proxy" type="range" min="0" max="100" value="66"><output id="proxyOut">66</output></div>
+        <div class="metric"><strong>Overall escalation risk</strong><span class="big" id="riskScore">61</span></div><div class="riskbar" id="modelbar" style="--w:61%"><span></span></div>
+      </article>
     </section>
-    <p class="footer-note">Verification marker: <code>HERMES_DASHBOARD_PANEL_OK_2026_06_04</code></p>
+
+    <section class="grid two" style="margin-top:18px">
+      <article class="card">
+        <h2>How we got here</h2>
+        <div class="timeline">
+          <div class="event"><strong>War + ceasefire pressure</strong><br><span class="muted">Reporting describes a months-long U.S./Israel-Iran war with a shaky ceasefire and recurring flare-ups.</span></div>
+          <div class="event"><strong>Strait of Hormuz becomes leverage</strong><br><span class="muted">AP says Iran let about two dozen commercial vessels pass daily recently, compared with more than 100 before the war.</span></div>
+          <div class="event"><strong>May 29 tentative deal</strong><br><span class="muted">AP reported negotiators reached a tentative 60-day ceasefire extension and planned nuclear talks, pending approval/confirmation.</span></div>
+          <div class="event"><strong>June 3 flare-up</strong><br><span class="muted">AP reported Iranian missile/drone activity aimed at Gulf states and U.S. strikes on an Iranian facility on Qeshm Island.</span></div>
+        </div>
+      </article>
+      <article class="card">
+        <h2>Plain-English conclusion</h2>
+        <p class="teen"><strong>Most likely:</strong> a tense, temporary deal or rolling ceasefire that reduces some shipping pressure but leaves the big disputes unresolved.</p>
+        <p class="teen"><strong>Biggest danger:</strong> a misread missile/drone incident, a shipping attack, or fighting in Lebanon pulling the wider region back into escalation.</p>
+        <p class="teen"><strong>Best-case path:</strong> confirmed ceasefire extension, more vessels through Hormuz, phased sanctions relief, and nuclear talks that park the hardest issues instead of letting them explode.</p>
+      </article>
+    </section>
+
+    <section class="card" style="margin-top:18px">
+      <h2>Sources & confidence</h2>
+      <p class="muted">Confidence: medium. Some live pages were bot-blocked, but AP pages loaded in-browser and Reuters/AP search results were used for cross-checking. Forecasts are Mary’s scenario estimates, not source claims.</p>
+      <ul class="sourceList">
+        <li><a href="https://apnews.com/article/iran-us-israel-war-2-june-2026-9bde9a3425d4b9ff70f157bdae0fb982">AP, June 3, 2026:</a> Iran fired missiles; U.S. struck an Iranian facility after reports of faltering talks.</li>
+        <li><a href="https://apnews.com/article/iran-us-war-oil-may-28-2026-8f5ed2813ba63df7ae9ccbe991688d29">AP, May 29, 2026:</a> U.S. and Iranian negotiators reached a tentative 60-day ceasefire extension and nuclear-talks framework.</li>
+        <li><a href="https://www.reuters.com/world/middle-east/war-may-end-interim-deal-that-leaves-iran-battered-unbowed-2026-06-03/">Reuters, June 3, 2026:</a> Interim-deal framing; obstacles include Lebanon/Hezbollah linkage and nuclear optics.</li>
+        <li><a href="https://www.reuters.com/world/middle-east/lebanon-ceasefire-raises-hopes-progess-iran-deal-2026-06-04/">Reuters, June 4, 2026:</a> Hezbollah rejection clouds Lebanon ceasefire and Iran-deal prospects.</li>
+        <li><a href="https://commonslibrary.parliament.uk/research-briefings/cbp-10637/">UK House of Commons Library, Apr. 24, 2026:</a> Background on U.S.-Iran ceasefire and nuclear-talk divisions.</li>
+      </ul>
+    </section>
   </main>
-
-  <script>
-    const clock = document.getElementById('clock');
-    const grid = document.getElementById('grid');
-    const linePath = document.getElementById('linePath');
-    const areaPath = document.getElementById('areaPath');
-    const metricSelect = document.getElementById('metricSelect');
-    const activityList = document.getElementById('activityList');
-    const activities = ['AI voice agent routed Dallas caller', 'Quote widget generated ballpark estimate', 'Owner SMS summary delivered', 'After-hours lead marked urgent'];
-
-    function tickClock(){ clock.textContent = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}); }
-    function rand(min, max){ return Math.round(min + Math.random() * (max - min)); }
-    function pointsFor(metric){
-      const ranges = { leads:[28,64], calls:[18,52], value:[44,92] };
-      const [min,max] = ranges[metric] || ranges.leads;
-      return Array.from({length: 18}, (_, i) => ({x: 30 + i * 51, y: 240 - rand(min, max) * 2.15}));
-    }
-    function draw(){
-      grid.innerHTML = '';
-      for(let y=40; y<=240; y+=40){ const l=document.createElementNS('http://www.w3.org/2000/svg','line'); l.setAttribute('x1',24); l.setAttribute('x2',876); l.setAttribute('y1',y); l.setAttribute('y2',y); l.setAttribute('class','chart-grid'); grid.appendChild(l); }
-      const pts = pointsFor(metricSelect.value);
-      const d = pts.map((p,i)=>`${i?'L':'M'} ${p.x} ${p.y}`).join(' ');
-      linePath.setAttribute('d', d);
-      areaPath.setAttribute('d', `${d} L ${pts[pts.length-1].x} 260 L ${pts[0].x} 260 Z`);
-    }
-    function updateMetrics(){
-      document.getElementById('leads').textContent = rand(38, 54);
-      document.getElementById('answer').textContent = rand(88, 97) + '%';
-      document.getElementById('response').textContent = (rand(92, 164) / 100).toFixed(2) + 'm';
-      document.getElementById('pipeline').textContent = '$' + (rand(162, 224) / 10).toFixed(1) + 'k';
-    }
-    function renderActivity(){
-      activityList.innerHTML = activities.map((text, i) => `<div class="row"><span class="dot ${i===1?'amber':''}"></span><div><strong>${text}</strong><span>${i+1} min ago</span></div><button type="button">Open</button></div>`).join('');
-    }
-    document.querySelectorAll('.metric').forEach(card => card.addEventListener('click', () => alert(card.querySelector('.label').textContent + ': drill-down panel would open here.')));
-    metricSelect.addEventListener('change', draw);
-    tickClock(); draw(); renderActivity(); updateMetrics();
-    setInterval(tickClock, 1000);
-    setInterval(() => { updateMetrics(); draw(); }, 4500);
-  </script>
+  <footer class="footer">Built for learning: forecasts can change fast. Look for source updates before using this for decisions.</footer>
+</div>
+<script>
+const tabs=[...document.querySelectorAll('[role="tab"]')];
+function showTab(day){tabs.forEach(t=>{const on=t.dataset.tab===day;t.setAttribute('aria-selected',on);document.getElementById('s'+t.dataset.tab).classList.toggle('active',on);});localStorage.setItem('iranDashboardTab',day)}
+tabs.forEach(t=>{t.addEventListener('click',()=>showTab(t.dataset.tab));t.addEventListener('keydown',e=>{let i=tabs.indexOf(t);if(e.key==='ArrowRight'){tabs[(i+1)%tabs.length].focus();}if(e.key==='ArrowLeft'){tabs[(i+tabs.length-1)%tabs.length].focus();}if(e.key==='Enter'||e.key===' '){e.preventDefault();showTab(document.activeElement.dataset.tab);}})});
+showTab(localStorage.getItem('iranDashboardTab')||'10');
+const ids=['diplo','mil','ship','proxy'];function update(){let d=+diplo.value,m=+mil.value,s=+ship.value,p=+proxy.value;diploOut.value=d;milOut.value=m;shipOut.value=s;proxyOut.value=p;let risk=Math.round((100-d)*.28+m*.29+s*.24+p*.19);riskScore.textContent=risk;modelbar.style.setProperty('--w',risk+'%');}
+ids.forEach(id=>document.getElementById(id).addEventListener('input',update));update();
+</script>
 </body>
 </html>
