@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Charlottesville Contractor Performance Simulator | TimeMachine Factory</title>
+  <meta name="description" content="Interactive TimeMachine dashboard comparing top public-signal Charlottesville VA contractors against four lower public-signal contractors." />
+  <style>
+    :root{
+      --bg:#0b1020; --bg2:#111a33; --panel:#151f3d; --panel2:#1d2a52; --ink:#f7fbff; --muted:#b8c6e6;
+      --line:#30416f; --accent:#7cf7d4; --accent2:#ffcc5c; --hot:#ff6b8a; --good:#74f28f; --warn:#ffd36e;
+      --shadow:0 24px 80px rgba(0,0,0,.38); --radius:24px; --focus:0 0 0 4px rgba(124,247,212,.35);
+      color-scheme:dark;
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;background:radial-gradient(circle at 12% 8%, rgba(124,247,212,.18), transparent 33%),radial-gradient(circle at 85% 12%, rgba(255,107,138,.18), transparent 28%),linear-gradient(160deg,var(--bg),#070a13 72%);color:var(--ink);line-height:1.45;min-height:100vh}
+    a{color:var(--accent)} .skip{position:absolute;left:-999px;top:10px;background:var(--accent);color:#07111b;padding:12px 16px;border-radius:14px;z-index:20}.skip:focus{left:10px;box-shadow:var(--focus)}
+    button,input,select{font:inherit} button,.chip,.card{transition:transform .18s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease} button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:none;box-shadow:var(--focus)}
+    .shell{width:min(1180px,calc(100% - 32px));margin:auto}.hero{padding:42px 0 22px}.kicker{display:inline-flex;gap:10px;align-items:center;border:1px solid rgba(124,247,212,.35);background:rgba(124,247,212,.10);color:var(--accent);border-radius:999px;padding:8px 13px;font-weight:800;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase}.hero-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:28px;align-items:end}.hero h1{font-size:clamp(2.15rem,5.7vw,5.2rem);line-height:.94;margin:18px 0 16px;letter-spacing:-.065em;text-wrap:balance}.hero p{color:var(--muted);font-size:clamp(1rem,2vw,1.25rem);max-width:760px}.hero strong{color:var(--ink)}
+    .mission{background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.025));border:1px solid rgba(255,255,255,.14);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}.mission h2{margin:0 0 10px;font-size:1.05rem}.metric-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}.metric{background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:14px}.metric b{display:block;font-size:1.65rem;color:var(--accent2)}.metric span{color:var(--muted);font-size:.86rem}.notice{margin-top:14px;font-size:.92rem;color:#dce7ff;background:rgba(255,204,92,.10);border:1px solid rgba(255,204,92,.30);border-radius:16px;padding:12px}
+    nav.toolnav{position:sticky;top:0;z-index:10;background:rgba(9,13,26,.82);backdrop-filter:blur(18px);border-block:1px solid rgba(255,255,255,.10)}.tabs{display:flex;gap:8px;overflow:auto;padding:12px 0}.tab{border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--ink);padding:11px 15px;border-radius:999px;cursor:pointer;white-space:nowrap;font-weight:800}.tab[aria-selected="true"]{background:var(--accent);color:#06121b;border-color:transparent}.tab:hover{transform:translateY(-1px);border-color:var(--accent)}
+    main{padding:22px 0 64px}.panel{display:none}.panel.active{display:block}.section-head{display:flex;justify-content:space-between;align-items:end;gap:18px;margin:18px 0}.section-head h2{font-size:clamp(1.55rem,3vw,2.6rem);margin:0;letter-spacing:-.04em}.section-head p{margin:6px 0 0;color:var(--muted);max-width:760px}.controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0}.control{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:12px}.control label{display:block;font-weight:800;font-size:.88rem;margin-bottom:8px}.control input[type="range"]{width:100%;accent-color:var(--accent)}.control select{width:100%;background:#0f1830;color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:10px}.chipbar{display:flex;flex-wrap:wrap;gap:8px}.chip{border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--ink);border-radius:999px;padding:9px 12px;cursor:pointer;font-weight:800}.chip.active{background:var(--accent2);color:#15100a;border-color:transparent}.chip:hover{transform:translateY(-1px)}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.card{position:relative;background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.035));border:1px solid rgba(255,255,255,.12);border-radius:22px;padding:18px;box-shadow:0 12px 40px rgba(0,0,0,.22)}.card:hover{transform:translateY(-2px);border-color:rgba(124,247,212,.5)}.card.top{border-color:rgba(116,242,143,.28)}.card.watch{border-color:rgba(255,204,92,.34)}.card h3{margin:0;font-size:1.12rem}.rank{display:flex;justify-content:space-between;gap:12px;align-items:start}.badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 10px;font-size:.76rem;font-weight:900;letter-spacing:.03em;text-transform:uppercase}.badge.top{background:rgba(116,242,143,.16);color:#b9ffc7}.badge.watch{background:rgba(255,204,92,.15);color:#ffe4a0}.score{font-size:2.25rem;font-weight:950;letter-spacing:-.05em;margin:8px 0}.bars{display:grid;gap:8px;margin:12px 0}.bar{height:10px;border-radius:999px;background:#0a1020;overflow:hidden;border:1px solid rgba(255,255,255,.09)}.bar span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent2))}.small{color:var(--muted);font-size:.9rem}.card button.more{margin-top:10px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.06);color:var(--ink);padding:9px 11px;cursor:pointer}.details{display:none;margin-top:12px;border-top:1px solid rgba(255,255,255,.12);padding-top:12px}.card.open .details{display:block}.compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}.versus{background:linear-gradient(145deg,rgba(124,247,212,.10),rgba(255,107,138,.09));border:1px solid rgba(255,255,255,.13);border-radius:22px;padding:18px}.big-number{font-size:clamp(2.2rem,6vw,4rem);font-weight:950;letter-spacing:-.06em}.scenario-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.scenario{background:rgba(255,255,255,.065);border:1px solid rgba(255,255,255,.13);border-radius:22px;padding:18px}.prob{height:14px;border-radius:999px;background:#091121;border:1px solid rgba(255,255,255,.1);overflow:hidden;margin:12px 0}.prob span{display:block;height:100%;background:linear-gradient(90deg,var(--hot),var(--accent2),var(--good))}.drivers{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.driver{border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:16px;background:rgba(255,255,255,.055)}.sources{display:grid;gap:12px}.source{display:grid;grid-template-columns:110px 1fr 120px;gap:12px;align-items:center;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:14px}.confidence{font-weight:950;color:var(--accent2)}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.footer-note{color:var(--muted);font-size:.92rem;margin-top:24px}.pill{display:inline-block;border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:5px 9px;margin:4px 4px 0 0;color:#dfe9ff;background:rgba(255,255,255,.06);font-size:.82rem}.mobile-test{display:none}
+    @media (max-width:860px){.hero-grid,.grid,.compare,.scenario-grid,.drivers{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.source{grid-template-columns:1fr}.metric-row{grid-template-columns:1fr 1fr}.mobile-test{display:block}.hero{padding-top:28px}.section-head{display:block}}
+    @media (max-width:560px){.shell{width:min(100% - 22px,1180px)}.controls{grid-template-columns:1fr}.metric-row{grid-template-columns:1fr}.tabs{padding-inline:2px}.card{padding:15px}.hero h1{font-size:2.35rem}}
+    @media (prefers-reduced-motion:reduce){*,html{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+  </style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to dashboard</a>
+<header class="hero shell">
+  <div class="hero-grid">
+    <div>
+      <span class="kicker">TimeMachine Factory • Charlottesville VA • 2026 public-signal scan</span>
+      <h1>Contractor Matchup Lab</h1>
+      <p><strong>Topic/objective:</strong> Compare the top 10 performing contractors to the 4 lowest performing contractors in Charlottesville VA. This tool turns contractor reputation data into a visual, teen-friendly simulator for smarter brainstorming.</p>
+    </div>
+    <aside class="mission" aria-labelledby="goal-title">
+      <h2 id="goal-title">Dashboard/tool goal</h2>
+      <p>Pick the most value-given features: reputation comparison, risk radar, what-if scoring, and 10/30/60-day TimeMachine scenarios for choosing where to focus outreach, research, or project planning.</p>
+      <div class="metric-row" aria-label="Dashboard summary metrics">
+        <div class="metric"><b>14</b><span>contractor profiles compared</span></div>
+        <div class="metric"><b>10/30/60</b><span>day planning horizons</span></div>
+        <div class="metric"><b>4</b><span>human-factors guardrails</span></div>
+      </div>
+      <p class="notice"><strong>Fairness note:</strong> “Performance” here means public research signals: BuildZoom score, visible project counts, reviews, and listing confidence. It is not a legal, safety, financial, or workmanship judgment.</p>
+    </aside>
+  </div>
+</header>
+<nav class="toolnav" aria-label="Dashboard sections">
+  <div class="shell tabs" role="tablist" aria-label="Contractor dashboard tabs">
+    <button class="tab" role="tab" aria-selected="true" aria-controls="panel-lab" id="tab-lab" data-panel="lab">Matchup Lab</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="panel-sim" id="tab-sim" data-panel="sim">TimeMachine</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="panel-radar" id="tab-radar" data-panel="radar">Risk Radar</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="panel-sources" id="tab-sources" data-panel="sources">Sources</button>
+  </div>
+</nav>
+<main id="main" class="shell" tabindex="-1">
+  <section id="panel-lab" class="panel active" role="tabpanel" aria-labelledby="tab-lab">
+    <div class="section-head"><div><h2>Top 10 vs lowest 4 public-signal profiles</h2><p>Use the controls to remix the score. High performers win on strong public signals; the lower-signal group shows where extra verification matters before trusting a contractor.</p></div><span class="pill mobile-test">Responsive mobile layout active below 860px</span></div>
+    <div class="controls" aria-label="Interactive scoring controls">
+      <div class="control"><label for="reviewWeight">Review weight: <span id="reviewOut">25</span>%</label><input id="reviewWeight" type="range" min="0" max="60" value="25" /></div>
+      <div class="control"><label for="projectWeight">Project weight: <span id="projectOut">30</span>%</label><input id="projectWeight" type="range" min="0" max="60" value="30" /></div>
+      <div class="control"><label for="sortMode">Sort cards</label><select id="sortMode"><option value="weighted">Weighted score</option><option value="bz">BuildZoom score</option><option value="projects">Project count</option><option value="confidence">Source confidence</option></select></div>
+      <div class="control"><label>Group filter</label><div class="chipbar" role="group" aria-label="Group filter"><button class="chip active" data-filter="all">All</button><button class="chip" data-filter="top">Top 10</button><button class="chip" data-filter="watch">Lowest 4</button></div></div>
+    </div>
+    <div class="compare" aria-live="polite">
+      <div class="versus"><span class="small">Top 10 average weighted score</span><div class="big-number" id="avgTop">--</div><p id="topExplain">Calculating...</p></div>
+      <div class="versus"><span class="small">Lowest 4 average weighted score</span><div class="big-number" id="avgWatch">--</div><p id="watchExplain">Calculating...</p></div>
+    </div>
+    <div id="cards" class="grid" aria-live="polite" aria-label="Contractor comparison cards"></div>
+  </section>
+  <section id="panel-sim" class="panel" role="tabpanel" aria-labelledby="tab-sim">
+    <div class="section-head"><div><h2>TimeMachine simulation</h2><p>Because this is a market/reputation comparison, the useful horizons are 10, 30, and 60 days. Probabilities are simulator estimates, not source-reported facts.</p></div></div>
+    <div class="scenario-grid" id="scenarios"></div>
+    <div class="section-head"><div><h2>Plain-English version</h2><p>Imagine you are picking teammates for a group project. The top group has more visible proof they can deliver. The lower-signal group is not “bad” automatically — it just needs more homework before anyone trusts it with real money.</p></div></div>
+  </section>
+  <section id="panel-radar" class="panel" role="tabpanel" aria-labelledby="tab-radar">
+    <div class="section-head"><div><h2>Risk radar + decision drivers</h2><p>Human-factors aware means the page keeps the decision simple: what proof exists, what is missing, and what should be checked next.</p></div></div>
+    <div class="drivers" id="drivers"></div>
+  </section>
+  <section id="panel-sources" class="panel" role="tabpanel" aria-labelledby="tab-sources">
+    <div class="section-head"><div><h2>Research sources, dates, and confidence</h2><p>Sources were checked during this autonomous job on June 5, 2026. Confidence is based on direct visibility, date freshness, and relevance to Charlottesville VA contractors.</p></div></div>
+    <div class="sources" id="sourcesList"></div>
+    <p class="footer-note">Unique marker: TMF-CHARLOTTESVILLE-CONTRACTOR-COMPARE-20260605170138-05EFE7. Requested by Chad Bruza, chad.bruza@hotmail.com.</p>
+  </section>
+</main>
+<script>
+const contractors=[
+ {name:'Abrahamse and Company Builders Inc',group:'top',bz:117,projects:12,reviews:0,confidence:83,notes:'Top public-score tier on BuildZoom page; limited review count visible in captured page.',tags:['custom build','high BZ score']},
+ {name:'Commonwealth Contractors',group:'top',bz:117,projects:16,reviews:3,confidence:92,notes:'BuildZoom score 117 with visible 3 reviews and home addition/kitchen categories.',tags:['design-build','reviews visible']},
+ {name:'Commonwealth Build & Design',group:'top',bz:115,projects:10,reviews:1,confidence:88,notes:'Local Charlottesville VA builder; visible 20 years of experience statement on listing.',tags:['local','design-build']},
+ {name:'Nola Build and Design',group:'top',bz:111,projects:29,reviews:0,confidence:87,notes:'Visible project-category counts: 18 home additions and 11 kitchen remodels.',tags:['renovation','project signals']},
+ {name:'Green Mountain Construction LLC',group:'top',bz:108,projects:10,reviews:0,confidence:84,notes:'Locally owned design/build listing with 5.0 home addition and kitchen remodel category signals.',tags:['local','custom']},
+ {name:'Halcyon Contracting',group:'top',bz:107,projects:10,reviews:0,confidence:84,notes:'Visible 5.0 category signals and strong service-positioning language.',tags:['remodeling','client experience']},
+ {name:'Martin / Horn, Inc',group:'top',bz:107,projects:146,reviews:0,confidence:91,notes:'Large visible project footprint: 12 home additions plus 134 other projects.',tags:['large project history','commercial/residential']},
+ {name:'Integrity Home Contracting, LLC',group:'top',bz:106,projects:8,reviews:0,confidence:78,notes:'High public-score signal; fewer details visible in sampled capture.',tags:['home contracting']},
+ {name:'Smith & Robertson, Inc',group:'top',bz:106,projects:6,reviews:1,confidence:88,notes:'BuildZoom score 106, 1 review, and detailed team/supervision description visible.',tags:['established team','review visible']},
+ {name:'Enoch E Snyder III Design Build LLC',group:'top',bz:105,projects:14,reviews:0,confidence:84,notes:'Visible 11 new constructions and 3 kitchen remodels.',tags:['new construction','design-build']},
+ {name:'Joseph Schepps Construction',group:'watch',bz:92,projects:0,reviews:0,confidence:58,notes:'Lower sampled public score and fewer visible detail signals in the captured page.',tags:['verify license','ask for references']},
+ {name:'Charlottesville Home Improvements',group:'watch',bz:92,projects:3,reviews:0,confidence:62,notes:'Lower sampled score, but some visible total-project signal; needs direct verification.',tags:['small project signal','verify insurance']},
+ {name:'Robertsons Renovations Inc',group:'watch',bz:92,projects:0,reviews:0,confidence:57,notes:'Lower sampled score with limited visible context in captured source.',tags:['verify scope','check recent work']},
+ {name:'Meruvias Construction LLC',group:'watch',bz:92,projects:0,reviews:0,confidence:57,notes:'Lower sampled score with limited public context in the captured listing.',tags:['verify references','check permits']}
+];
+const scenarios=[
+ {horizon:'10 days',prob:74,title:'Fast shortlist wins',text:'The top 10 remain the safer first-pass shortlist because their public signals are clearer. Best move: verify licenses, ask for three recent references, and compare bids.',risk:'Risk: treating a score like a guarantee.'},
+ {horizon:'30 days',prob:61,title:'Verification reshuffles the board',text:'Some lower-signal contractors may improve if direct references, insurance, permits, or recent photos are strong. Best move: run a structured outreach checklist.',risk:'Risk: missing small firms that do good work but have quiet online profiles.'},
+ {horizon:'60 days',prob:56,title:'Real performance beats listings',text:'Actual bid quality, responsiveness, scheduling, and finished-work proof become more important than marketplace rank. Best move: track response time and quote clarity.',risk:'Risk: seasonal demand can make even strong contractors harder to book.'}
+];
+const drivers=[
+ {name:'Public reputation signal',level:'High impact',body:'BuildZoom score, visible reviews, BBB/marketplace presence, and listing detail make it easier to compare firms quickly.'},
+ {name:'Project evidence',level:'High impact',body:'Visible project counts and categories reduce uncertainty. A teenager could think of this as a highlight reel: more proof means less guessing.'},
+ {name:'License + insurance checks',level:'Non-negotiable',body:'Virginia contractors should be checked through official channels before hiring. This dashboard is a research starter, not a replacement for due diligence.'},
+ {name:'Bias + data gaps',level:'Risk flag',body:'Online platforms reward visibility. A lower public score can mean weaker performance, but it can also mean fewer digital breadcrumbs.'},
+ {name:'Human factors',level:'Decision quality',body:'Clear sorting, filters, and plain-language explanations keep the comparison from becoming a wall of numbers.'},
+ {name:'Teen-friendly interpretation',level:'Audience fit',body:'The tool frames contractor comparison like picking the most reliable team for a major project: proof, trust, and follow-through matter.'}
+];
+const sources=[
+ {date:'Jun 2026',title:'Yelp search result for best general contractors in Charlottesville, VA',url:'https://www.yelp.com/search?cflt=contractors&find_loc=Charlottesville,+VA',confidence:'Medium',note:'Search result listed current “Last Updated June 2026” contractor names, but page itself triggered bot verification.'},
+ {date:'Apr–May 2026',title:'BuildZoom Charlottesville general contractors directory and profile snippets',url:'https://www.buildzoom.com/charlottesville-va/general-contractors',confidence:'High',note:'Direct browser capture showed contractor names, BZ scores, project counts, and BuildZoom methodology notes.'},
+ {date:'Apr 15, 2026',title:'BuildZoom Commonwealth Contractors profile snippet',url:'https://www.buildzoom.com/contractor/commonwealth-contractors',confidence:'High',note:'Search result reported BZ score 117, top 1% in Virginia, and active license verification when checked.'},
+ {date:'May 12, 2026',title:'BuildZoom Craig Builders profile snippet',url:'https://www.buildzoom.com/contractor/craig-builders',confidence:'Medium',note:'Search result gave a dated example of BZ scoring and recommended score threshold above 95.'},
+ {date:'Current directory',title:'BBB General Contractor directory near Charlottesville, VA',url:'https://www.bbb.org/us/va/charlottesville/category/general-contractor',confidence:'Medium',note:'Useful for accreditation/complaint cross-checks, but not enough extracted ranking detail for primary scoring.'},
+ {date:'2026 guidance',title:'Virginia DPOR contractor complaint/licensing context',url:'https://www.dpor.virginia.gov/LicenseLookup',confidence:'High',note:'Official license lookup should be used before hiring; public marketplace data alone is not sufficient.'},
+ {date:'Oct 5, 2025',title:'Angi Charlottesville contractors listing',url:'https://www.angi.com/companylist/us/va/charlottesville/contractor.htm',confidence:'Medium',note:'Search result showed current local contractor review/rating listing context; direct extraction unavailable in this environment.'}
+];
+const cards=document.getElementById('cards'), reviewWeight=document.getElementById('reviewWeight'), projectWeight=document.getElementById('projectWeight'), reviewOut=document.getElementById('reviewOut'), projectOut=document.getElementById('projectOut'), sortMode=document.getElementById('sortMode'); let filter='all';
+function weighted(c){const rw=+reviewWeight.value/100, pw=+projectWeight.value/100, baseW=Math.max(.1,1-rw-pw); const projectScore=Math.min(100,(Math.log10(c.projects+1)/Math.log10(151))*100); const reviewScore=Math.min(100,c.reviews*22); return Math.round((c.bz/117*100)*baseW + projectScore*pw + reviewScore*rw + c.confidence*.12)}
+function render(){reviewOut.textContent=reviewWeight.value;projectOut.textContent=projectWeight.value;let list=contractors.filter(c=>filter==='all'||c.group===filter);list.sort((a,b)=>{if(sortMode.value==='bz')return b.bz-a.bz;if(sortMode.value==='projects')return b.projects-a.projects;if(sortMode.value==='confidence')return b.confidence-a.confidence;return weighted(b)-weighted(a)});cards.innerHTML=list.map((c,i)=>`<article class="card ${c.group}" tabindex="0" data-name="${c.name}"><div class="rank"><div><span class="badge ${c.group}">${c.group==='top'?'Top public signal':'Lowest sampled signal'}</span><h3>${i+1}. ${c.name}</h3></div><div class="score" aria-label="Weighted score ${weighted(c)}">${weighted(c)}</div></div><div class="bars" aria-hidden="true"><div class="bar"><span style="width:${Math.min(100,c.bz/117*100)}%"></span></div><div class="bar"><span style="width:${Math.min(100,c.confidence)}%"></span></div></div><p class="small"><strong>BZ score:</strong> ${c.bz} • <strong>Visible projects:</strong> ${c.projects} • <strong>Visible reviews:</strong> ${c.reviews} • <strong>Source confidence:</strong> ${c.confidence}%</p><div>${c.tags.map(t=>`<span class="pill">${t}</span>`).join('')}</div><button class="more" aria-expanded="false">Show proof notes</button><div class="details"><p>${c.notes}</p><p class="small">Next check: verify license status, insurance, references, recent project photos, and quote clarity before deciding.</p></div></article>`).join('');
+ document.querySelectorAll('.more').forEach(btn=>btn.addEventListener('click',e=>{const card=e.currentTarget.closest('.card');card.classList.toggle('open');e.currentTarget.setAttribute('aria-expanded',card.classList.contains('open'))}));
+ document.querySelectorAll('.card').forEach(card=>card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();card.querySelector('.more').click();}}));
+ const top=contractors.filter(c=>c.group==='top').map(weighted), watch=contractors.filter(c=>c.group==='watch').map(weighted); const avg=a=>Math.round(a.reduce((x,y)=>x+y,0)/a.length);document.getElementById('avgTop').textContent=avg(top);document.getElementById('avgWatch').textContent=avg(watch);document.getElementById('topExplain').textContent='Higher visibility, stronger public score, and more evidence make this group easier to trust after normal due diligence.';document.getElementById('watchExplain').textContent='Lower public signal does not equal bad work; it means the buyer should collect more proof before choosing.';}
+function renderScenarios(){document.getElementById('scenarios').innerHTML=scenarios.map(s=>`<article class="scenario"><h3>${s.horizon}: ${s.title}</h3><div class="prob" aria-label="Probability ${s.prob} percent"><span style="width:${s.prob}%"></span></div><p><strong>${s.prob}% simulator probability.</strong> ${s.text}</p><p class="small">${s.risk}</p></article>`).join('')}
+function renderDrivers(){document.getElementById('drivers').innerHTML=drivers.map(d=>`<article class="driver"><span class="badge watch">${d.level}</span><h3>${d.name}</h3><p>${d.body}</p></article>`).join('')}
+function renderSources(){document.getElementById('sourcesList').innerHTML=sources.map(s=>`<article class="source"><strong>${s.date}</strong><div><a href="${s.url}" target="_blank" rel="noopener">${s.title}</a><p class="small">${s.note}</p></div><span class="confidence">${s.confidence}</span></article>`).join('')}
+function activate(panel){document.querySelectorAll('.tab').forEach(t=>{const on=t.dataset.panel===panel;t.setAttribute('aria-selected',on);document.getElementById('panel-'+t.dataset.panel).classList.toggle('active',on)});}
+document.querySelectorAll('.tab').forEach((tab,idx,all)=>{tab.addEventListener('click',()=>activate(tab.dataset.panel));tab.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();const next=(idx+(e.key==='ArrowRight'?1:-1)+all.length)%all.length;all[next].focus();all[next].click();}})});
+reviewWeight.addEventListener('input',render);projectWeight.addEventListener('input',render);sortMode.addEventListener('change',render);document.querySelectorAll('.chip').forEach(ch=>ch.addEventListener('click',()=>{document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));ch.classList.add('active');filter=ch.dataset.filter;render()}));
+render();renderScenarios();renderDrivers();renderSources();window.__tmfReady={contractorCount:contractors.length,controls:['tabs','sliders','sort','filters','cards'],unique:'TMF-CHARLOTTESVILLE-CONTRACTOR-COMPARE-20260605170138-05EFE7'};
+</script>
+</body>
+</html>
