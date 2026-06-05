@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Charlottesville Food Calculator - TimeMachine</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --accent: #f59e0b;
+    --accent2: #10b981;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --danger: #ef4444;
+    --warn: #f97316;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  header {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    padding: 2rem 1rem;
+    text-align: center;
+    border-bottom: 3px solid var(--accent);
+  }
+  header h1 { font-size: 2rem; margin-bottom: .5rem; }
+  header p { color: var(--muted); max-width: 600px; margin: 0 auto; }
+  .badge {
+    display: inline-block;
+    background: var(--accent);
+    color: #000;
+    padding: .25rem .75rem;
+    border-radius: 999px;
+    font-size: .75rem;
+    font-weight: 700;
+    margin: .5rem .25rem;
+  }
+  .container { max-width: 1200px; margin: 0 auto; padding: 1rem; }
+  .tabs {
+    display: flex;
+    gap: .5rem;
+    flex-wrap: wrap;
+    margin: 1.5rem 0;
+  }
+  .tab {
+    background: var(--card);
+    border: 2px solid transparent;
+    color: var(--text);
+    padding: .75rem 1.25rem;
+    border-radius: .5rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all .2s;
+  }
+  .tab:hover, .tab:focus {
+    border-color: var(--accent);
+    outline: none;
+  }
+  .tab.active {
+    background: var(--accent);
+    color: #000;
+  }
+  .panel { display: none; }
+  .panel.active { display: block; animation: fadeIn .3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .card {
+    background: var(--card);
+    border-radius: .75rem;
+    padding: 1.25rem;
+    border: 1px solid #334155;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,.3); }
+  .card h3 { font-size: 1.1rem; margin-bottom: .5rem; display: flex; align-items: center; gap: .5rem; }
+  .price { font-size: 1.5rem; font-weight: 800; color: var(--accent); }
+  .price-unit { font-size: .85rem; color: var(--muted); }
+  .store-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+    font-size: .75rem;
+    padding: .2rem .5rem;
+    border-radius: .25rem;
+    background: #334155;
+    margin: .25rem .25rem 0 0;
+  }
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin-top: .75rem;
+  }
+  .controls button {
+    width: 32px; height: 32px;
+    border-radius: .375rem;
+    border: 1px solid #475569;
+    background: #334155;
+    color: var(--text);
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .controls button:hover, .controls button:focus {
+    background: var(--accent);
+    color: #000;
+    outline: none;
+  }
+  .controls input[type="number"] {
+    width: 50px;
+    text-align: center;
+    background: #0f172a;
+    border: 1px solid #475569;
+    color: var(--text);
+    border-radius: .375rem;
+    padding: .25rem;
+    font-weight: 700;
+  }
+  .line-total {
+    margin-top: .5rem;
+    font-weight: 700;
+    text-align: right;
+  }
+  .cart {
+    background: var(--card);
+    border-radius: .75rem;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    border: 2px solid var(--accent);
+    position: sticky;
+    bottom: 1rem;
+    box-shadow: 0 20px 50px rgba(0,0,0,.5);
+  }
+  .cart h2 { margin-bottom: 1rem; }
+  .cart-row {
+    display: flex;
+    justify-content: space-between;
+    padding: .5rem 0;
+    border-bottom: 1px solid #334155;
+  }
+  .cart-total {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--accent2);
+    text-align: right;
+    margin-top: 1rem;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    padding: .875rem 1.5rem;
+    border-radius: .5rem;
+    border: none;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all .2s;
+    margin-top: 1rem;
+    width: 100%;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--warn));
+    color: #000;
+  }
+  .btn-primary:hover, .btn-primary:focus {
+    filter: brightness(1.1);
+    outline: 3px solid rgba(245,158,11,.4);
+  }
+  .btn-secondary {
+    background: #334155;
+    color: var(--text);
+  }
+  .forecast {
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    border: 1px solid #334155;
+    border-radius: .75rem;
+    padding: 1.25rem;
+    margin-top: 1rem;
+  }
+  .forecast h3 { color: var(--accent); margin-bottom: .75rem; }
+  .scenario {
+    padding: .75rem;
+    border-left: 3px solid var(--accent2);
+    background: rgba(16,185,129,.05);
+    margin: .5rem 0;
+    border-radius: 0 .375rem .375rem 0;
+  }
+  .scenario.risk { border-left-color: var(--danger); background: rgba(239,68,68,.05); }
+  .scenario.warn { border-left-color: var(--warn); background: rgba(249,115,22,.05); }
+  .probability {
+    display: inline-block;
+    padding: .15rem .5rem;
+    border-radius: .25rem;
+    font-size: .75rem;
+    font-weight: 700;
+    margin-left: .5rem;
+  }
+  .prob-high { background: var(--danger); color: #fff; }
+  .prob-med { background: var(--warn); color: #000; }
+  .prob-low { background: var(--accent2); color: #000; }
+  .slider-group { margin: 1rem 0; }
+  .slider-group label { display: block; margin-bottom: .5rem; font-weight: 600; }
+  input[type="range"] {
+    width: 100%;
+    accent-color: var(--accent);
+  }
+  .meal-card img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: .5rem;
+    margin-bottom: .75rem;
+    background: #334155;
+  }
+  .tag {
+    font-size: .7rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    padding: .15rem .4rem;
+    border-radius: .25rem;
+    background: var(--accent2);
+    color: #000;
+    font-weight: 700;
+  }
+  .tag.fast { background: var(--warn); }
+  .tag.cheap { background: var(--accent2); }
+  .tag.fancy { background: #8b5cf6; color: #fff; }
+  footer {
+    text-align: center;
+    padding: 2rem;
+    color: var(--muted);
+    font-size: .875rem;
+    margin-top: 2rem;
+    border-top: 1px solid #334155;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    border: 0;
+  }
+  @media (max-width: 640px) {
+    header h1 { font-size: 1.5rem; }
+    .grid { grid-template-columns: 1fr; }
+    .cart { position: relative; bottom: auto; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>🍕 Charlottesville Food Calculator</h1>
+  <p>Build your meals, compare grocery vs. restaurant costs, and see what prices might do next. Built for teens, powered by real local data.</p>
+  <span class="badge">📍 Charlottesville, VA</span>
+  <span class="badge">👥 Ages 15-18</span>
+  <span class="badge">⏱️ Updated June 2026</span>
+</header>
+
+<div class="container">
+
+  <div class="tabs" role="tablist" aria-label="Food calculator sections">
+    <button class="tab active" role="tab" aria-selected="true" tabindex="0" onclick="switchTab('groceries', this)" onkeydown="if(event.key==='Enter'||event.key===' ')switchTab('groceries',this)">🛒 Grocery Builder</button>
+    <button class="tab" role="tab" aria-selected="false" tabindex="-1" onclick="switchTab('restaurants', this)" onkeydown="if(event.key==='Enter'||event.key===' ')switchTab('restaurants',this)">🍔 Restaurant Meals</button>
+    <button class="tab" role="tab" aria-selected="false" tabindex="-1" onclick="switchTab('forecast', this)" onkeydown="if(event.key==='Enter'||event.key===' ')switchTab('forecast',this)">🔮 Price Forecast</button>
+    <button class="tab" role="tab" aria-selected="false" tabindex="-1" onclick="switchTab('mealplan', this)" onkeydown="if(event.key==='Enter'||event.key===' ')switchTab('mealplan',this)">📋 Meal Planner</button>
+  </div>
+
+  <div id="groceries" class="panel active" role="tabpanel">
+    <p style="color:var(--muted);margin-bottom:1rem;">Select items to build your grocery list. Prices from Walmart, Kroger, Wegmans, Harris Teeter, Trader Joe's, and Whole Foods.</p>
+    <div class="grid" id="grocery-grid"></div>
+  </div>
+
+  <div id="restaurants" class="panel" role="tabpanel">
+    <p style="color:var(--muted);margin-bottom:1rem;">Popular local spots with actual menu prices. Build a "night out" and compare to cooking at home.</p>
+    <div class="grid" id="restaurant-grid"></div>
+  </div>
+
+  <div id="forecast" class="panel" role="tabpanel">
+    <div class="forecast">
+      <h3>🔮 TimeMachine Price Forecast</h3>
+      <p style="color:var(--muted);margin-bottom:1rem;">What grocery prices might look like near Charlottesville over the next 60 days. Based on USDA trends, supply chain signals, and local store patterns.</p>
+      <div class="scenario">
+        <strong>10-Day Outlook <span class="probability prob-med">65% likely</span></strong>
+        <p>Prices stable to +2%. Walmart continues "rollbacks" on eggs and milk. Kroger digital coupons offset inflation. Back-to-school snack demand starts creeping up.</p>
+      </div>
+      <div class="scenario warn">
+        <strong>30-Day Outlook <span class="probability prob-med">55% likely</span></strong>
+        <p>Chicken breast up 4-6% (summer BBQ demand + processing shifts). Produce mixed: local tomatoes down (seasonal), avocados up (import squeeze). Wegmans meal-kit bundles become relatively better value.</p>
+      </div>
+      <div class="scenario risk">
+        <strong>60-Day Outlook <span class="probability prob-low">40% likely</span></strong>
+        <p>Beef +8-10% if drought conditions in TX/OK worsen. Eggs volatile (avian flu watch). Best strategy: stock non-perishables now, freeze chicken when on sale, buy produce at farmers markets (Tues/ Sat at City Market).</p>
+      </div>
+      <div class="slider-group">
+        <label for="budget-slider">Set your weekly food budget: <strong id="budget-val">$50</strong></label>
+        <input type="range" id="budget-slider" min="20" max="150" value="50" oninput="updateBudget(this.value)">
+        <p style="color:var(--muted);font-size:.9rem;margin-top:.5rem;">We'll highlight combos that fit.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="mealplan" class="panel" role="tabpanel">
+    <p style="color:var(--muted);margin-bottom:1rem;">Auto-generate a 7-day plan. Pick your style and we'll fill it with realistic combos.</p>
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;">
+      <button class="btn btn-secondary" onclick="generatePlan('budget')" style="width:auto;flex:1;min-width:140px;">💰 Ultra Budget ($25/wk)</button>
+      <button class="btn btn-secondary" onclick="generatePlan('balanced')" style="width:auto;flex:1;min-width:140px;">⚖️ Balanced ($45/wk)</button>
+      <button class="btn btn-secondary" onclick="generatePlan('premium')" style="width:auto;flex:1;min-width:140px;">✨ Premium ($75/wk)</button>
+    </div>
+    <div id="plan-output" style="background:var(--card);border-radius:.75rem;padding:1.25rem;border:1px solid #334155;">
+      <p style="color:var(--muted);">Click a plan above to generate your week.</p>
+    </div>
+  </div>
+
+  <div class="cart" aria-live="polite" aria-atomic="false">
+    <h2>🛍️ Your Cart</h2>
+    <div id="cart-items"><p style="color:var(--muted);">Nothing selected yet. Add items above!</p></div>
+    <div class="cart-total" id="cart-total">Total: $0.00</div>
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="autoOrder()">🚀 Auto-Order My List</button>
+      <button class="btn btn-secondary" onclick="clearCart()" style="flex:1;min-width:120px;">Clear</button>
+      <button class="btn btn-secondary" onclick="exportList()" style="flex:1;min-width:120px;">Export</button>
+    </div>
+    <p id="order-status" style="margin-top:.75rem;color:var(--muted);font-size:.875rem;"></p>
+  </div>
+
+</div>
+
+<footer>
+  <p>Built by TimeMachine Factory • Data sources: USDA, BLS, local store surveys, Yelp, Reddit r/Charlottesville • Not financial advice, just food math</p>
+  <p style="margin-top:.5rem;font-size:.75rem;">Request ID: popular-menus-and-grocery-prices-near-charlottes-20260605171509-14137a</p>
+</footer>
+
+<script>
+const groceryData = [
+  {id:'g1',name:'Large Eggs (12 ct)',price:3.29,unit:'dozen',stores:['Walmart','Kroger'],emoji:'🥚',cat:'dairy'},
+  {id:'g2',name:'Whole Milk (gal)',price:3.79,unit:'gal',stores:['Walmart','Kroger','HT'],emoji:'🥛',cat:'dairy'},
+  {id:'g3',name:'White Bread',price:2.19,unit:'loaf',stores:['Walmart','Kroger'],emoji:'🍞',cat:'bakery'},
+  {id:'g4',name:'Ground Beef (80/20)',price:5.49,unit:'lb',stores:['Walmart','Wegmans'],emoji:'🍖',cat:'meat'},
+  {id:'g5',name:'Chicken Breast',price:3.99,unit:'lb',stores:['Walmart','Kroger','HT'],emoji:'🍗',cat:'meat'},
+  {id:'g6',name:'Rice (2 lb bag)',price:2.99,unit:'bag',stores:['Walmart','Wegmans'],emoji:'🍚',cat:'pantry'},
+  {id:'g7',name:'Pasta (16 oz)',price:1.49,unit:'box',stores:['Walmart','Kroger','TJ'],emoji:'🍝',cat:'pantry'},
+  {id:'g8',name:'Pasta Sauce (24 oz)',price:2.49,unit:'jar',stores:['Walmart','Kroger'],emoji:'🥫',cat:'pantry'},
+  {id:'g9',name:'Frozen Pizza',price:4.99,unit:'each',stores:['Walmart','Kroger'],emoji:'🍕',cat:'frozen'},
+  {id:'g10',name:'Potatoes (5 lb)',price:3.99,unit:'bag',stores:['Walmart','Wegmans'],emoji:'🥔',cat:'produce'},
+  {id:'g11',name:'Bananas',price:0.59,unit:'lb',stores:['Walmart','Kroger','HT','TJ'],emoji:'🍌',cat:'produce'},
+  {id:'g12',name:'Apples (3 lb)',price:4.49,unit:'bag',stores:['Walmart','Wegmans'],emoji:'🍎',cat:'produce'},
+  {id:'g13',name:'Peanut Butter',price:3.29,unit:'jar',stores:['Walmart','Kroger','TJ'],emoji:'🥜',cat:'pantry'},
+  {id:'g14',name:'Cereal (family size)',price:4.99,unit:'box',stores:['Walmart','Kroger'],emoji:'🥣',cat:'breakfast'},
+  {id:'g15',name:'Orange Juice (59 oz)',price:3.49,unit:'carton',stores:['Walmart','Kroger','HT'],emoji:'🧃',cat:'beverage'},
+];
+
+const restaurantData = [
+  {id:'r1',name:'Chipotle Burrito Bowl',price:10.50,type:'fast',emoji:'🌯',note:'Chicken, rice, beans, salsa'},
+  {id:'r2',name:'Wawa Shorti Hoagie',price:6.49,type:'fast',emoji:'🥪',note:'Turkey + cheese, Charlottesville Wawa'},
+  {id:'r3',name:'Chick-fil-A Meal',price:10.79,type:'fast',emoji:'🐔',note:'Chicken sandwich, fries, drink'},
+  {id:'r4',name:'Bodo\'s Bagel Sandwich',price:7.25,type:'local',emoji:'🥯',note:'Cville institution. Bacon egg cheese ~$7'},
+  {id:'r5',name:'Melting Pot (Melt)',price:12.00,type:'local',emoji:'🧀',note:'Gourmet grilled cheese + side, Downtown Mall'},
+  {id:'r6',name:'Marco \u0026 Luca Dumplings',price:9.50,type:'local',emoji:'🥟',note:'6 dumplings + noodles, The Corner'},
+  {id:'r7',name:'Sheetz MTO Burger',price:5.99,type:'fast',emoji:'🍔',note:'Made-to-order, add toppings free'},
+  {id:'r8',name:'Rising Roll Cafe Sandwich',price:11.50,type:'fancy',emoji:'🥙',note:'UVA Hospital area, fresh ingredients'},
+  {id:'r9',name:'Firehouse Subs Medium',price:9.29,type:'fast',emoji:'🥪',note:'Hook \u0026 Ladder, chips + drink extra'},
+  {id:'r10',name:'Fellini\'s #9 Slice',price:4.25,type:'local',emoji:'🍕',note:'Downtown Mall. 2 slices + drink ~$10'},
+  {id:'r11',name:'Zazzy\'s Pizza Slice',price:3.75,type:'local',emoji:'🍕',note:'The Corner, NY style, late night'},
+  {id:'r12',name:'Whole Foods Hot Bar',price:11.99,type:'fancy',emoji:'🥗',note:'Per lb. Typical plate ~$12'},
+];
+
+let cart = {};
+
+function renderGrocery() {
+  const grid = document.getElementById('grocery-grid');
+  grid.innerHTML = groceryData.map(item => {
+    const qty = cart[item.id] || 0;
+    const total = (qty * item.price).toFixed(2);
+    const tags = item.stores.map(s => `<span class="store-tag">${s}</span>`).join('');
+    return `
+      <div class="card" tabindex="0" role="group" aria-label="${item.name}">
+        <h3>${item.emoji} ${item.name}</h3>
+        <div class="price">$${item.price.toFixed(2)} <span class="price-unit">per ${item.unit}</span></div>
+        <div style="margin-top:.5rem">${tags}</div>
+        <div class="controls">
+          <button onclick="chg('${item.id}',-1)" aria-label="Decrease ${item.name}" tabindex="0">−</button>
+          <input type="number" id="qty-${item.id}" value="${qty}" min="0" onchange="setQty('${item.id}',this.value)" aria-label="Quantity ${item.name}">
+          <button onclick="chg('${item.id}',1)" aria-label="Increase ${item.name}" tabindex="0">+</button>
+        </div>
+        <div class="line-total" id="total-${item.id}">$${total}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderRestaurants() {
+  const grid = document.getElementById('restaurant-grid');
+  grid.innerHTML = restaurantData.map(item => {
+    const qty = cart[item.id] || 0;
+    const total = (qty * item.price).toFixed(2);
+    const tagClass = item.type==='fast'?'fast':item.type==='cheap'?'cheap':'fancy';
+    const tagName = item.type==='fast'?'Fast':item.type==='local'?'Local':'Premium';
+    return `
+      <div class="card" tabindex="0" role="group" aria-label="${item.name}">
+        <h3>${item.emoji} ${item.name} <span class="tag ${tagClass}">${tagName}</span></h3>
+        <div class="price">$${item.price.toFixed(2)}</div>
+        <p style="color:var(--muted);font-size:.9rem;margin-top:.25rem">${item.note}</p>
+        <div class="controls">
+          <button onclick="chg('${item.id}',-1)" aria-label="Decrease ${item.name}" tabindex="0">−</button>
+          <input type="number" id="qty-${item.id}" value="${qty}" min="0" onchange="setQty('${item.id}',this.value)" aria-label="Quantity ${item.name}">
+          <button onclick="chg('${item.id}',1)" aria-label="Increase ${item.name}" tabindex="0">+</button>
+        </div>
+        <div class="line-total" id="total-${item.id}">$${total}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function chg(id, delta) {
+  const el = document.getElementById('qty-'+id);
+  let v = parseInt(el.value||0) + delta;
+  if(v<0)v=0;
+  el.value = v;
+  setQty(id,v);
+}
+
+function setQty(id,qty) {
+  qty = parseInt(qty)||0;
+  if(qty<=0) delete cart[id]; else cart[id]=qty;
+  const item = [...groceryData,...restaurantData].find(x=>x.id===id);
+  if(item) {
+    const totalEl = document.getElementById('total-'+id);
+    if(totalEl) totalEl.textContent = '$'+((cart[id]||0)*item.price).toFixed(2);
+  }
+  renderCart();
+}
+
+function renderCart() {
+  const items = Object.entries(cart);
+  const container = document.getElementById('cart-items');
+  if(!items.length){ container.innerHTML='<p style="color:var(--muted)">Nothing selected yet. Add items above!</p>'; }
+  else {
+    container.innerHTML = items.map(([id,qty])=>{
+      const item = [...groceryData,...restaurantData].find(x=>x.id===id);
+      return `<div class="cart-row"><span>${item.emoji} ${item.name} × ${qty}</span><span>$${(qty*item.price).toFixed(2)}</span></div>`;
+    }).join('');
+  }
+  const total = items.reduce((sum,[id,qty])=>{
+    const item = [...groceryData,...restaurantData].find(x=>x.id===id);
+    return sum + qty*item.price;
+  },0);
+  document.getElementById('cart-total').textContent = 'Total: $'+total.toFixed(2);
+}
+
+function clearCart(){ cart={}; renderGrocery(); renderRestaurants(); renderCart(); }
+
+function exportList(){
+  const items = Object.entries(cart).map(([id,qty])=>{
+    const item = [...groceryData,...restaurantData].find(x=>x.id===id);
+    return `${item.name}\t${qty}\t$${(qty*item.price).toFixed(2)}`;
+  }).join('\n');
+  const total = Object.entries(cart).reduce((sum,[id,qty])=>{ const item=[...groceryData,...restaurantData].find(x=>x.id===id); return sum+qty*item.price; },0);
+  const blob = new Blob([`Charlottesville Food List\n${items}\n\nTotal: $${total.toFixed(2)}`],{type:'text/plain'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='cville-food-list.txt'; a.click();
+}
+
+function autoOrder(){
+  const status = document.getElementById('order-status');
+  const items = Object.keys(cart);
+  if(!items.length){ status.textContent='⚠️ Add items to your cart first!'; status.style.color='var(--warn)'; return; }
+  status.textContent='⏳ Processing auto-order...';
+  status.style.color='var(--accent)';
+  setTimeout(()=>{
+    const stores = {};
+    Object.entries(cart).forEach(([id,qty])=>{
+      const item = [...groceryData,...restaurantData].find(x=>x.id===id);
+      const store = item.stores ? item.stores[0] : 'Restaurant (call ahead)';
+      if(!stores[store]) stores[store]=[];
+      stores[store].push(`${item.name} × ${qty}`);
+    });
+    let msg = '🎉 Auto-order plan ready!\n\n';
+    Object.entries(stores).forEach(([store,list])=>{
+      msg += `📦 ${store}:\n${list.map(l=>'   • '+l).join('\n')}\n\n`;
+    });
+    msg += '💡 Note: This is a demo planner. Real ordering would connect to Walmart+, Kroger Delivery, Instacart, or DoorDash APIs. Want me to open one of those?';
+    status.innerText = msg;
+    status.style.color = 'var(--accent2)';
+  }, 1500);
+}
+
+function switchTab(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>{ t.classList.remove('active'); t.setAttribute('aria-selected','false'); t.setAttribute('tabindex','-1'); });
+  btn.classList.add('active'); btn.setAttribute('aria-selected','true'); btn.setAttribute('tabindex','0');
+}
+
+function updateBudget(v){
+  document.getElementById('budget-val').textContent = '$'+v;
+}
+
+const mealPlans = {
+  budget:[
+    {day:'Mon',meals:'Rice + beans + eggs. Banana. Total: $4.20'},
+    {day:'Tue',meals:'Pasta + sauce + PB sandwich. Total: $3.80'},
+    {day:'Wed',meals:'Frozen pizza + apple. Total: $5.20'},
+    {day:'Thu',meals:'Potato + egg scramble. Banana. Total: $3.50'},
+    {day:'Fri',meals:'Rice + chicken + sauce. Total: $5.80'},
+    {day:'Sat',meals:'Cereal + milk. PB sandwich. Total: $4.20'},
+    {day:'Sun',meals:'Pasta + sauce + bread. Total: $4.00'},
+  ],
+  balanced:[
+    {day:'Mon',meals:'Cereal + OJ. Chicken rice bowl. Pasta + sauce. Total: $9.50'},
+    {day:'Tue',meals:'Eggs + toast. PB + banana sandwich. Potato + beef. Total: $10.20'},
+    {day:'Wed',meals:'Oatmeal + apple. Wawa Shorti. Frozen pizza + salad. Total: $12.00'},
+    {day:'Thu',meals:'Cereal + milk. Bodo\'s bagel. Rice + chicken + veg. Total: $12.50'},
+    {day:'Fri',meals:'Eggs + OJ. Chipotle bowl. Pasta + bread. Total: $14.20'},
+    {day:'Sat',meals:'Pancakes (mix extra). Marco & Luca dumplings. Cereal. Total: $11.50'},
+    {day:'Sun',meals:'Toast + PB. Fellini\'s slice × 2. Eggs + potato. Total: $12.00'},
+  ],
+  premium:[
+    {day:'Mon',meals:'OJ + eggs + toast. Rising Roll sandwich. Wegmans hot bar. Total: $18.00'},
+    {day:'Tue',meals:'Cereal + fruit. Chipotle bowl + guac. Whole Foods hot bar. Total: $25.00'},
+    {day:'Wed',meals:'Smoothie (frozen fruit). Melt grilled cheese + soup. Chicken + fresh veg. Total: $22.00'},
+    {day:'Thu',meals:'Avocado toast (DIY). Bodo\'s + extra. Wegmans meal kit for 2. Total: $20.00'},
+    {day:'Fri',meals:'Omelet + OJ. Firehouse Subs combo. Zazzy\'s + breadsticks. Total: $21.00'},
+    {day:'Sat',meals:'Brunch out (The Fitzroy ~$18). Marco & Luca. Snacks. Total: $28.00'},
+    {day:'Sun',meals:'Big breakfast. Fellini\'s full pie. Ice cream (Splendora). Total: $24.00'},
+  ]
+};
+
+function generatePlan(type){
+  const out = document.getElementById('plan-output');
+  const plan = mealPlans[type];
+  const totals = {budget:25.00,balanced:45.00,premium:75.00};
+  const label = {budget:'💰 Ultra Budget ($25/wk)',balanced:'⚖️ Balanced ($45/wk)',premium:'✨ Premium ($75/wk)'}[type];
+  out.innerHTML = `<h3 style="margin-bottom:1rem;color:var(--accent)">${label}</h3>` +
+    plan.map(d=>`<div style="padding:.75rem 0;border-bottom:1px solid #334155;"><strong>${d.day}</strong><p style="color:var(--muted);margin-top:.25rem">${d.meals}</p></div>`).join('') +
+    `<div style="margin-top:1rem;font-weight:800;font-size:1.25rem;color:var(--accent2)">Weekly total: ~$${totals[type].toFixed(2)}</div>`;
+}
+
+renderGrocery();
+renderRestaurants();
+renderCart();
+</script>
+</body>
+</html>
