@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Trending AI Topics TimeMachine Dashboard</title>
+  <meta name="description" content="Interactive TimeMachine dashboard for trending AI topics, scenarios, risks, and value scoring." />
+  <style>
+    :root{--bg:#071019;--panel:#101b2b;--panel2:#15243a;--ink:#f5fbff;--muted:#a9bad2;--line:#29405f;--cyan:#59e1ff;--lime:#a9ff68;--gold:#ffd166;--pink:#ff5ea8;--red:#ff6b6b;--shadow:0 24px 70px rgba(0,0,0,.36)}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(circle at 18% 8%,rgba(89,225,255,.20),transparent 32%),radial-gradient(circle at 88% 4%,rgba(255,94,168,.17),transparent 28%),linear-gradient(145deg,#050a11,#0b1726 58%,#071019);color:var(--ink);line-height:1.45}button,input,select{font:inherit}.skip{position:absolute;left:-999px;top:10px;background:var(--lime);color:#081019;padding:10px 14px;border-radius:8px;z-index:10}.skip:focus{left:10px}.shell{width:min(1160px,calc(100% - 30px));margin:auto}.hero{padding:38px 0 20px;display:grid;grid-template-columns:1.03fr .97fr;gap:22px;align-items:end}.kicker{display:inline-flex;gap:8px;align-items:center;border:1px solid rgba(89,225,255,.35);background:rgba(89,225,255,.09);color:#dff9ff;border-radius:999px;padding:8px 12px;font-weight:800;font-size:.82rem;text-transform:uppercase;letter-spacing:.05em}.dot{width:9px;height:9px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 8px rgba(169,255,104,.13)}h1{font-size:clamp(2.2rem,6vw,5.6rem);line-height:.93;letter-spacing:-.055em;margin:16px 0 12px}p{color:var(--muted)}.lead{font-size:clamp(1rem,2vw,1.25rem);max-width:760px}.panel{background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.035));border:1px solid rgba(255,255,255,.13);border-radius:8px;box-shadow:var(--shadow)}.brief{padding:18px}.metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}.metric{padding:14px;border-radius:8px;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.10)}.metric b{display:block;font-size:1.7rem;color:var(--gold);letter-spacing:-.04em}.metric span{font-size:.85rem;color:var(--muted)}.nav{position:sticky;top:0;z-index:6;background:rgba(7,16,25,.84);backdrop-filter:blur(15px);border-block:1px solid rgba(255,255,255,.10)}.tabs{display:flex;gap:8px;overflow:auto;padding:10px 0}.tab{border:1px solid var(--line);background:#0d1827;color:var(--ink);border-radius:8px;padding:10px 12px;font-weight:850;cursor:pointer;white-space:nowrap}.tab[aria-selected=true]{background:var(--cyan);color:#061018;border-color:transparent}.tab:focus-visible,.chip:focus-visible,input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid rgba(89,225,255,.45);outline-offset:2px}main{padding:20px 0 50px}.section{display:none}.section.active{display:block}.section-head{display:flex;justify-content:space-between;gap:18px;align-items:end;margin:16px 0}.section-head h2{font-size:clamp(1.45rem,3vw,2.45rem);letter-spacing:-.035em;margin:0}.grid{display:grid;gap:14px}.cards{grid-template-columns:repeat(3,1fr)}.trend{padding:16px;min-height:240px;display:flex;flex-direction:column;gap:10px}.trend h3{margin:0}.score{font-size:2.1rem;font-weight:950;letter-spacing:-.045em}.bar{height:10px;border-radius:999px;background:#07111f;border:1px solid rgba(255,255,255,.12);overflow:hidden}.bar span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--pink),var(--gold),var(--lime));width:50%}.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}.tag{border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.06);border-radius:999px;padding:5px 8px;font-size:.78rem;color:#dce9ff}.controls{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:14px 0}.control{padding:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.055);border-radius:8px}.control label{display:block;font-weight:850;font-size:.88rem;margin-bottom:8px}.control input,.control select{width:100%;accent-color:var(--cyan)}.chiprow{display:flex;flex-wrap:wrap;gap:8px}.chip{border:1px solid var(--line);background:#0d1827;color:var(--ink);border-radius:8px;padding:9px 11px;font-weight:850;cursor:pointer}.chip.active{background:var(--gold);color:#160f05;border-color:transparent}.scenario-grid{grid-template-columns:repeat(3,1fr)}.scenario{padding:18px}.scenario .prob{font-size:2.5rem;font-weight:950;color:var(--lime);letter-spacing:-.05em}.calc{display:grid;grid-template-columns:.95fr 1.05fr;gap:14px}.result{padding:18px;border-radius:8px;background:linear-gradient(145deg,rgba(89,225,255,.12),rgba(169,255,104,.08));border:1px solid rgba(89,225,255,.22)}.result .big{font-size:4rem;font-weight:950;letter-spacing:-.07em;color:var(--lime)}.sources{display:grid;gap:10px}.source{display:grid;grid-template-columns:150px 1fr 120px;gap:12px;align-items:center;padding:13px;border:1px solid rgba(255,255,255,.12);border-radius:8px;background:rgba(255,255,255,.055)}.source a{color:#dff9ff}.confidence{font-weight:950;color:var(--gold)}.notice{border-left:4px solid var(--gold);padding:12px 14px;background:rgba(255,209,102,.08);border-radius:8px;color:#e9f2ff}.footer{padding:16px 0 40px;color:var(--muted);font-size:.9rem}.hidden{display:none!important}@media(max-width:900px){.hero,.cards,.scenario-grid,.calc{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.source{grid-template-columns:1fr}.metric-grid{grid-template-columns:1fr 1fr}}@media(max-width:560px){.shell{width:min(100% - 22px,1160px)}.controls,.metric-grid{grid-template-columns:1fr}h1{font-size:2.35rem}.result .big{font-size:3rem}}@media(prefers-reduced-motion:reduce){*,html{scroll-behavior:auto!important;transition:none!important}}
+  </style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to dashboard</a>
+<header class="hero shell">
+  <section>
+    <span class="kicker"><span class="dot"></span> TimeMachine • Trending AI Topics • TM-AI-TRENDS-20260606022528</span>
+    <h1>AI Trend Radar</h1>
+    <p class="lead">A compact dashboard for Chad Bruza's request: <strong>Trending aI topics</strong>. Goal: <strong>Most value (your choice)</strong>. It ranks the AI topics most likely to matter now, then simulates what could happen over the next 10, 30, and 60 days.</p>
+  </section>
+  <aside class="panel brief" aria-labelledby="brief-title">
+    <h2 id="brief-title">Fast Read</h2>
+    <p>Highest value is not "which topic is loudest." It is where adoption, risk, urgency, and business leverage overlap.</p>
+    <div class="metric-grid" aria-label="Dashboard summary metrics">
+      <div class="metric"><b>6</b><span>AI topics scored</span></div>
+      <div class="metric"><b>3</b><span>future horizons</span></div>
+      <div class="metric"><b>5</b><span>source signals</span></div>
+    </div>
+    <p class="notice"><strong>Decision rule:</strong> agents + trust + AI search are the near-term revenue stack. Chips/energy and regulation shape the playing field.</p>
+  </aside>
+</header>
+<nav class="nav" aria-label="Dashboard sections">
+  <div class="shell tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="true" aria-controls="panel-radar" id="tab-radar" data-tab="radar">Trend Radar</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="panel-sim" id="tab-sim" data-tab="sim">TimeMachine</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="panel-calc" id="tab-calc" data-tab="calc">Value Calculator</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="panel-sources" id="tab-sources" data-tab="sources">Sources</button>
+  </div>
+</nav>
+<main id="main" class="shell" tabindex="-1">
+  <section id="panel-radar" class="section active" role="tabpanel" aria-labelledby="tab-radar">
+    <div class="section-head"><div><h2>Rank the opportunities</h2><p>Filter by use case and adjust urgency. Scores combine market pull, immediacy, monetization, risk, and teen-friendly explainability.</p></div></div>
+    <div class="controls">
+      <div class="control"><label for="urgency">Urgency boost: <span id="urgencyOut">20</span>%</label><input id="urgency" type="range" min="0" max="40" value="20" /></div>
+      <div class="control"><label for="risk">Risk penalty: <span id="riskOut">15</span>%</label><input id="risk" type="range" min="0" max="40" value="15" /></div>
+      <div class="control"><label for="segment">Segment</label><select id="segment"><option value="all">All</option><option value="business">Business</option><option value="creator">Creator</option><option value="student">Student</option><option value="infrastructure">Infrastructure</option></select></div>
+      <div class="control"><label>View</label><div class="chiprow"><button class="chip active" data-view="cards">Cards</button><button class="chip" data-view="brief">Brief</button></div></div>
+    </div>
+    <div id="trendCards" class="grid cards" aria-live="polite"></div>
+  </section>
+  <section id="panel-sim" class="section" role="tabpanel" aria-labelledby="tab-sim">
+    <div class="section-head"><div><h2>10 / 30 / 60 day TimeMachine</h2><p>These are scenario estimates, not facts. Use them to decide what to build, teach, sell, or monitor first.</p></div></div>
+    <div id="scenarios" class="grid scenario-grid"></div>
+  </section>
+  <section id="panel-calc" class="section" role="tabpanel" aria-labelledby="tab-calc">
+    <div class="section-head"><div><h2>Value score calculator</h2><p>Move the sliders to decide whether an AI topic is worth acting on this week.</p></div></div>
+    <div class="calc">
+      <div class="panel brief">
+        <div class="control"><label for="market">Market pull <span id="marketOut">78</span></label><input id="market" type="range" min="0" max="100" value="78" /></div>
+        <div class="control"><label for="speed">Speed to useful demo <span id="speedOut">70</span></label><input id="speed" type="range" min="0" max="100" value="70" /></div>
+        <div class="control"><label for="trust">Trust/readiness <span id="trustOut">58</span></label><input id="trust" type="range" min="0" max="100" value="58" /></div>
+        <div class="control"><label for="edge">Revenue edge <span id="edgeOut">82</span></label><input id="edge" type="range" min="0" max="100" value="82" /></div>
+      </div>
+      <div class="result" aria-live="polite">
+        <span class="tag">Live calculation</span>
+        <div class="big" id="valueScore">73</div>
+        <h3 id="valueTitle">Act this week</h3>
+        <p id="valueText">Strong opportunity: pick one focused use case, build a small demo, and include trust guardrails from the start.</p>
+      </div>
+    </div>
+  </section>
+  <section id="panel-sources" class="section" role="tabpanel" aria-labelledby="tab-sources">
+    <div class="section-head"><div><h2>Research signals</h2><p>Bounded source set used for speed. Each source contributes one decision signal instead of a long research dump.</p></div></div>
+    <div class="sources" id="sourcesList"></div>
+  </section>
+</main>
+<footer class="footer shell">Verification marker: TM_AI_TRENDS_DASHBOARD_VERIFIED_20260606. Built for request trending-ai-topics-20260606022528-cb781a.</footer>
+<script>
+const trends=[
+ {name:'Agentic AI',base:92,risk:24,segments:['business','student'],why:'AI agents can plan, trigger actions, and coordinate work instead of just answering prompts.',move:'Build small agent workflows around narrow jobs: inbox triage, quote prep, dashboard generation, research briefs.',tags:['automation','workflow','highest leverage']},
+ {name:'AI Search / Answer Engines',base:87,risk:18,segments:['business','creator'],why:'Discovery is shifting from links to answers. Brands and experts need to become cited evidence, not just ranked pages.',move:'Create answer-ready pages, original POVs, comparison assets, FAQs, and entity signals.',tags:['GEO','AEO','authority']},
+ {name:'Synthetic Media Trust',base:82,risk:38,segments:['creator','student','business'],why:'AI video, images, and voice are getting easier. Trust, provenance, and consent become business-critical.',move:'Use watermarking, consent logs, source notes, and clear human review before publishing.',tags:['deepfakes','identity','proof']},
+ {name:'AI Regulation + Governance',base:76,risk:31,segments:['business'],why:'As AI gets more autonomous, risk management moves from legal afterthought to product requirement.',move:'Add policy, audit trails, model limits, and human approval points before scaling.',tags:['trust','policy','compliance']},
+ {name:'Chips, Energy, and Cost',base:71,risk:28,segments:['infrastructure','business'],why:'AI demand is constrained by compute, power, and price. Efficient workflows win when usage grows.',move:'Track cost per task, cache repeated work, use smaller models where quality is enough.',tags:['compute','energy','margin']},
+ {name:'AI in School + Learning',base:74,risk:34,segments:['student','creator'],why:'Students are using AI more, but schools are still sorting out honesty, skill-building, and guardrails.',move:'Teach AI as a thinking partner: cite, verify, explain, and show your work.',tags:['education','skills','guardrails']}
+];
+const scenarios=[
+ {days:'10 days',prob:72,title:'Agents become the action layer',text:'The practical winner is not another chatbot. It is a small agent that completes one workflow reliably: research, compare, draft, verify, or route.',risk:'Risk: teams overbuild broad agents before proving one narrow job works.'},
+ {days:'30 days',prob:64,title:'Trust becomes the buying filter',text:'More AI content appears, so proof matters more. Winners show sources, consent, verification, and clear limits.',risk:'Risk: synthetic media mistakes damage credibility faster than they create attention.'},
+ {days:'60 days',prob:58,title:'AI search changes the funnel',text:'More buyers ask AI systems for recommendations before visiting websites. Brands with clear expertise and answer-ready evidence get surfaced first.',risk:'Risk: old SEO-only playbooks miss zero-click discovery and answer-engine citation.'}
+];
+const sources=[
+ {date:'2026',title:'Stanford HAI AI Index',url:'https://hai.stanford.edu/ai-index/2026-ai-index-report%C2%A0',confidence:'High',signal:'Broad AI benchmark and policy context; useful for grounding trend claims.'},
+ {date:'2026',title:'McKinsey: State of AI trust in the agentic era',url:'https://www.mckinsey.com/capabilities/tech-and-ai/our-insights/tech-forward/state-of-ai-trust-in-2026-shifting-to-the-agentic-era',confidence:'High',signal:'Agentic adoption raises the cost of failure, making trust and governance core.'},
+ {date:'2026',title:'Google Cloud AI Agent Trends 2026',url:'https://services.google.com/fh/files/misc/google_cloud_ai_agent_trends_2026_report.pdf',confidence:'Medium',signal:'Business value is moving toward agentic AI and multi-step task completion.'},
+ {date:'2026',title:'TechTarget: Future of generative AI trends',url:'https://www.techtarget.com/searchenterpriseai/feature/The-future-of-generative-AI-Trends-to-follow',confidence:'Medium',signal:'ROI, data quality, security, orchestration, and human oversight remain central.'},
+ {date:'2026',title:'IBM: AI and tech trends predictions',url:'https://www.ibm.com/think/news/ai-tech-trends-predictions-2026',confidence:'Medium',signal:'AI, security, and compute infrastructure are converging into one operating question.'}
+];
+const $=sel=>document.querySelector(sel), $$=sel=>Array.from(document.querySelectorAll(sel));
+function weighted(t){const urgency=+$('#urgency').value, risk=+$('#risk').value; return Math.max(1,Math.min(100,Math.round(t.base + urgency*.35 - t.risk*(risk/100))));}
+function renderTrends(){const seg=$('#segment').value, brief=document.querySelector('[data-view="brief"]').classList.contains('active'); $('#urgencyOut').textContent=$('#urgency').value; $('#riskOut').textContent=$('#risk').value; const items=trends.filter(t=>seg==='all'||t.segments.includes(seg)).sort((a,b)=>weighted(b)-weighted(a)); $('#trendCards').innerHTML=items.map(t=>{const s=weighted(t); return '<article class="panel trend"><h3>'+t.name+'</h3><div class="score">'+s+'</div><div class="bar" aria-label="Score '+s+'"><span style="width:'+s+'%"></span></div><p>'+t.why+'</p><p class="'+(brief?'':'hidden')+'"><strong>Move:</strong> '+t.move+'</p><div class="tags">'+t.tags.map(x=>'<span class="tag">'+x+'</span>').join('')+'</div></article>'}).join('')}
+function renderScenarios(){ $('#scenarios').innerHTML=scenarios.map(s=>'<article class="panel scenario"><span class="tag">'+s.days+'</span><div class="prob">'+s.prob+'%</div><h3>'+s.title+'</h3><p>'+s.text+'</p><p><strong>Risk flag:</strong> '+s.risk+'</p></article>').join('') }
+function renderSources(){ $('#sourcesList').innerHTML=sources.map(s=>'<article class="source"><strong>'+s.date+'</strong><a href="'+s.url+'" target="_blank" rel="noopener">'+s.title+'</a><span class="confidence">'+s.confidence+'</span><p style="grid-column:1/-1;margin:0">'+s.signal+'</p></article>').join('') }
+function calc(){['market','speed','trust','edge'].forEach(id=>$('#'+id+'Out').textContent=$('#'+id).value); const v=Math.round((+$('#market').value*.3)+(+$('#speed').value*.22)+(+$('#trust').value*.2)+(+$('#edge').value*.28)); $('#valueScore').textContent=v; $('#valueTitle').textContent=v>=75?'Act this week':v>=55?'Prototype carefully':'Monitor, do not chase'; $('#valueText').textContent=v>=75?'Strong opportunity: pick one focused use case, build a small demo, and include trust guardrails from the start.':v>=55?'Moderate opportunity: build only if you can prove a specific user pain and keep scope tight.':'Low action score: watch the trend, collect examples, and wait for clearer demand.'}
+$$('.tab').forEach(btn=>btn.addEventListener('click',()=>{$$('.tab').forEach(b=>b.setAttribute('aria-selected','false')); btn.setAttribute('aria-selected','true'); $$('.section').forEach(s=>s.classList.remove('active')); $('#panel-'+btn.dataset.tab).classList.add('active')}));
+$$('.chip').forEach(btn=>btn.addEventListener('click',()=>{$$('.chip').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderTrends()}));
+['urgency','risk','segment'].forEach(id=>$('#'+id).addEventListener('input',renderTrends));
+['market','speed','trust','edge'].forEach(id=>$('#'+id).addEventListener('input',calc));
+renderTrends();renderScenarios();renderSources();calc();
+</script>
+</body>
+</html>
